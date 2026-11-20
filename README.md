@@ -27,7 +27,7 @@ Working today:
 - ✅ **Append-only ledger** — `blocks.jsonl`, replayed on restart, state reconstructed
 - ✅ **TCP gossip** — hello/height handshake, catch-up (`GetBlocks`), live `Block` fan-out
 - ✅ **Devnet faucet** — nonce-safe under concurrent requests, 1 000 TACHYON per request
-- ✅ **HTTP RPC** — 14 routes, JSON in/out
+- ✅ **HTTP RPC** — 15 routes, JSON in/out
 - ✅ **CLI** — ~50 commands, Solana-style namespacing
 - ✅ **30 tests** — PoH, PoA, PoW, state, block validation, ledger, restart replay, catch-up
 
@@ -171,7 +171,8 @@ Global flag: `-u, --url <RPC>` (also `TACHYON_RPC`) overrides the stored endpoin
 | GET | `/accounts` | full account snapshot |
 | GET | `/balance/{pubkey}` | lamports |
 | GET | `/block/{slot}` | one block |
-| GET | `/blocks` | height + the in-memory ring |
+| GET | `/blocks` | newest page from the ring; `?from=<slot>&limit=<n>` pages the ledger |
+| GET | `/tx/{hash}` | look up a confirmed transaction and its slot |
 | POST | `/tx` | submit a signed `Transaction` |
 | POST | `/faucet` | `{ "pubkey", "lamports" }` |
 | GET | `/mine` | mine a PoW admission proof (demo) |
