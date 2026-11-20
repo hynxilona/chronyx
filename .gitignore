@@ -1,0 +1,9 @@
+/target
+*.log
+/data
+.env
+
+# Local devnets created by `tachyon devnet init` / `join`
+/devnet
+/node2
+*.jsonl
