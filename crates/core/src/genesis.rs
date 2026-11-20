@@ -8,8 +8,8 @@ use sha2::{Digest, Sha256};
 
 use crate::types::Hash;
 
-/// Smallest unit. 1 TACHYON = 1_000_000_000 lamports.
-pub const LAMPORTS_PER_TACHYON: u64 = 1_000_000_000;
+/// Smallest unit. 1 CHRONYX = 1_000_000_000 quanta.
+pub const QUANTA_PER_CHRONYX: u64 = 1_000_000_000;
 
 /// Devnet faucet seed. Deterministic so every node can derive it.
 pub const FAUCET_SEED: [u8; 32] = [0xFA; 32];
@@ -31,7 +31,7 @@ pub struct GenesisValidator {
 pub struct GenesisAllocation {
     /// Ed25519 pubkey, hex encoded.
     pub pubkey: String,
-    pub lamports: u64,
+    pub quanta: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -68,7 +68,7 @@ impl Genesis {
             // Seed each validator with a little runway.
             allocations.push(GenesisAllocation {
                 pubkey: pk,
-                lamports: 1_000 * LAMPORTS_PER_TACHYON,
+                quanta: 1_000 * QUANTA_PER_CHRONYX,
             });
         }
 
@@ -76,11 +76,11 @@ impl Genesis {
         let faucet = hex::encode(faucet_key.verifying_key().to_bytes());
         allocations.push(GenesisAllocation {
             pubkey: faucet.clone(),
-            lamports: 1_000_000 * LAMPORTS_PER_TACHYON,
+            quanta: 1_000_000 * QUANTA_PER_CHRONYX,
         });
 
         Self {
-            chain_id: "tachyon-devnet-1".to_string(),
+            chain_id: "chronyx-devnet-1".to_string(),
             genesis_time_ms: now_ms(),
             slot_ms: 400,
             ticks_per_slot: 8,

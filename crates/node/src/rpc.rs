@@ -11,8 +11,8 @@ use axum::{
 use serde::Deserialize;
 use serde_json::{json, Value};
 
-use tachyon_core::genesis::parse_key;
-use tachyon_core::{pow, Transaction};
+use chronyx_core::genesis::parse_key;
+use chronyx_core::{pow, Transaction};
 
 use crate::node::{Node, Status};
 
@@ -78,9 +78,9 @@ async fn validators(State(node): State<Arc<Node>>) -> Json<Value> {
 async fn supply(State(node): State<Arc<Node>>) -> Json<Value> {
     let state = node.state.lock().await;
     Json(json!({
-        "lamports": state.total_supply(),
+        "quanta": state.total_supply(),
         "accounts": state.len(),
-        "lamports_per_tachyon": tachyon_core::LAMPORTS_PER_TACHYON,
+        "quanta_per_chronyx": chronyx_core::QUANTA_PER_CHRONYX,
     }))
 }
 
@@ -97,7 +97,7 @@ async fn account(
     let account = state.account(&key);
     Ok(Json(json!({
         "pubkey": pubkey,
-        "lamports": account.lamports,
+        "quanta": account.quanta,
         "nonce": account.nonce,
     })))
 }
@@ -107,8 +107,8 @@ async fn balance(
     Path(pubkey): Path<String>,
 ) -> Result<Json<Value>, ApiError> {
     let key = parse_key(&pubkey).map_err(|e| err(StatusCode::BAD_REQUEST, e))?;
-    let lamports = node.state.lock().await.balance(&key);
-    Ok(Json(json!({ "pubkey": pubkey, "lamports": lamports })))
+    let quanta = node.state.lock().await.balance(&key);
+    Ok(Json(json!({ "pubkey": pubkey, "quanta": quanta })))
 }
 
 async fn accounts(State(node): State<Arc<Node>>) -> Json<Value> {
@@ -119,7 +119,7 @@ async fn accounts(State(node): State<Arc<Node>>) -> Json<Value> {
         .map(|(pubkey, account)| {
             json!({
                 "pubkey": pubkey,
-                "lamports": account.lamports,
+                "quanta": account.quanta,
                 "nonce": account.nonce,
             })
         })
@@ -215,11 +215,11 @@ async fn submit_tx(
 #[derive(Deserialize)]
 struct FaucetRequest {
     pubkey: String,
-    lamports: u64,
+    quanta: u64,
 }
 
-/// Per-request faucet cap: 1,000 TACHYON.
-const FAUCET_MAX: u64 = 1_000 * tachyon_core::LAMPORTS_PER_TACHYON;
+/// Per-request faucet cap: 1,000 CHRONYX.
+const FAUCET_MAX: u64 = 1_000 * chronyx_core::QUANTA_PER_CHRONYX;
 
 async fn faucet(
     State(node): State<Arc<Node>>,
@@ -230,13 +230,13 @@ async fn faucet(
         .as_ref()
         .ok_or_else(|| err(StatusCode::FORBIDDEN, "faucet is disabled on this node"))?;
 
-    if req.lamports == 0 {
-        return Err(err(StatusCode::BAD_REQUEST, "lamports must be > 0"));
+    if req.quanta == 0 {
+        return Err(err(StatusCode::BAD_REQUEST, "quanta must be > 0"));
     }
-    if req.lamports > FAUCET_MAX {
+    if req.quanta > FAUCET_MAX {
         return Err(err(
             StatusCode::BAD_REQUEST,
-            format!("faucet caps each request at {} lamports", FAUCET_MAX),
+            format!("faucet caps each request at {} quanta", FAUCET_MAX),
         ));
     }
 
@@ -252,13 +252,13 @@ async fn faucet(
         mempool.iter().filter(|tx| tx.from == from).count() as u64
     };
 
-    let tx = Transaction::sign(faucet_key, to, req.lamports, applied + pending);
+    let tx = Transaction::sign(faucet_key, to, req.quanta, applied + pending);
     let hash = hex::encode(tx.hash());
     node.mempool.lock().await.push(tx);
 
     Ok(Json(json!({
         "accepted": true,
-        "lamports": req.lamports,
+        "quanta": req.quanta,
         "tx": hash,
     })))
 }

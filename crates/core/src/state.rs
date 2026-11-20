@@ -1,7 +1,7 @@
 //! Native account state.
 //!
 //! This is the "token" from scratch: no contracts, no ERC-20, no VM. An account
-//! is a balance plus a nonce. A transfer is a signed message that moves lamports
+//! is a balance plus a nonce. A transfer is a signed message that moves quanta
 //! and bumps the nonce. That's the whole model — deliberately.
 
 use std::collections::BTreeMap;
@@ -13,7 +13,7 @@ use crate::types::{Transaction, TxError};
 
 #[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Account {
-    pub lamports: u64,
+    pub quanta: u64,
     pub nonce: u64,
 }
 
@@ -27,7 +27,7 @@ impl State {
         let mut state = Self::default();
         for allocation in &genesis.allocations {
             let key = crate::genesis::parse_key(&allocation.pubkey)?;
-            state.credit(&key, allocation.lamports);
+            state.credit(&key, allocation.quanta);
         }
         Ok(state)
     }
@@ -37,16 +37,16 @@ impl State {
     }
 
     pub fn balance(&self, key: &[u8; 32]) -> u64 {
-        self.account(key).lamports
+        self.account(key).quanta
     }
 
     pub fn nonce(&self, key: &[u8; 32]) -> u64 {
         self.account(key).nonce
     }
 
-    pub fn credit(&mut self, key: &[u8; 32], lamports: u64) {
+    pub fn credit(&mut self, key: &[u8; 32], quanta: u64) {
         let entry = self.accounts.entry(*key).or_default();
-        entry.lamports = entry.lamports.saturating_add(lamports);
+        entry.quanta = entry.quanta.saturating_add(quanta);
     }
 
     /// Verify and apply a transfer. Atomic: on error nothing changes.
@@ -60,12 +60,12 @@ impl State {
                 got: tx.nonce,
             });
         }
-        if sender.lamports < tx.amount {
+        if sender.quanta < tx.amount {
             return Err(TxError::InsufficientFunds);
         }
 
         let mut next_sender = sender;
-        next_sender.lamports -= tx.amount;
+        next_sender.quanta -= tx.amount;
         next_sender.nonce = sender.nonce.checked_add(1).ok_or(TxError::Overflow)?;
 
         self.accounts.insert(tx.from, next_sender);
@@ -82,7 +82,7 @@ impl State {
     }
 
     pub fn total_supply(&self) -> u64 {
-        self.accounts.values().map(|a| a.lamports).sum()
+        self.accounts.values().map(|a| a.quanta).sum()
     }
 
     /// Sorted snapshot, for RPC / explorers.
@@ -97,7 +97,7 @@ impl State {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::genesis::{Genesis, LAMPORTS_PER_TACHYON};
+    use crate::genesis::{Genesis, QUANTA_PER_CHRONYX};
     use ed25519_dalek::SigningKey;
 
     fn setup() -> (State, SigningKey, SigningKey) {
@@ -114,7 +114,7 @@ mod tests {
         let state = State::from_genesis(&g).unwrap();
         for v in &g.validators {
             let key = crate::genesis::parse_key(&v.identity).unwrap();
-            assert_eq!(state.balance(&key), 1_000 * LAMPORTS_PER_TACHYON);
+            assert_eq!(state.balance(&key), 1_000 * QUANTA_PER_CHRONYX);
         }
     }
 

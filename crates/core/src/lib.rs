@@ -1,4 +1,4 @@
-//! Tachyon core: PoH clock, PoW admission, PoA finality, native accounts.
+//! Chronyx core: PoH clock, PoW admission, PoA finality, native accounts.
 //!
 //! Design contract:
 //!   * PoH  -> ordering + verifiable time
@@ -15,7 +15,7 @@ pub mod pow;
 pub mod state;
 pub mod types;
 
-pub use genesis::{Genesis, GenesisAllocation, GenesisValidator, LAMPORTS_PER_TACHYON};
+pub use genesis::{Genesis, GenesisAllocation, GenesisValidator, QUANTA_PER_CHRONYX};
 pub use keys::KeypairFile;
 pub use state::{Account, State};
 pub use types::{Block, BlockHeader, Hash, Transaction, TxError};

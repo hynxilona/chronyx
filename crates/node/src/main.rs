@@ -1,4 +1,4 @@
-//! `tachyond` — the node binary.
+//! `chronyxd` — the node binary.
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
@@ -8,11 +8,11 @@ use clap::Parser;
 use tracing::info;
 use tracing_subscriber::EnvFilter;
 
-use tachyon_node::config::{default_home, NodeConfig};
-use tachyon_node::{node, p2p, rpc, Node};
+use chronyx_node::config::{default_home, NodeConfig};
+use chronyx_node::{node, p2p, rpc, Node};
 
 #[derive(Parser, Debug)]
-#[command(name = "tachyond", version, about = "Tachyon devnet node")]
+#[command(name = "chronyxd", version, about = "Chronyx devnet node")]
 struct Args {
     /// Load a node.toml config file.
     #[arg(long)]
@@ -93,7 +93,7 @@ async fn main() -> anyhow::Result<()> {
             validators = status.validators,
             quorum = status.quorum,
             is_validator = status.is_validator,
-            "tachyon node up"
+            "chronyx node up"
         );
     }
 

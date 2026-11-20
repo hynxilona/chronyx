@@ -15,7 +15,7 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
 use tracing::{debug, info, warn};
 
-use tachyon_core::Block;
+use chronyx_core::Block;
 
 use crate::node::{Node, BLOCKS_PAGE};
 

@@ -27,7 +27,7 @@ impl Default for CliConfig {
 pub fn home() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(".tachyon")
+        .join(".chronyx")
 }
 
 pub fn config_path() -> PathBuf {

@@ -12,11 +12,11 @@ use serde::Serialize;
 use tokio::sync::Mutex;
 use tracing::{debug, info, warn};
 
-use tachyon_core::genesis::{now_ms, FAUCET_SEED};
-use tachyon_core::poa::ValidatorSet;
-use tachyon_core::poh::PohRecorder;
-use tachyon_core::types::merkle_root;
-use tachyon_core::{Block, BlockHeader, Genesis, Hash, KeypairFile, State, Transaction};
+use chronyx_core::genesis::{now_ms, FAUCET_SEED};
+use chronyx_core::poa::ValidatorSet;
+use chronyx_core::poh::PohRecorder;
+use chronyx_core::types::merkle_root;
+use chronyx_core::{Block, BlockHeader, Genesis, Hash, KeypairFile, State, Transaction};
 
 use crate::config::NodeConfig;
 use crate::ledger::Ledger;
@@ -348,7 +348,7 @@ impl Node {
         let current_slot = self.current_slot();
 
         Status {
-            chain: "tachyon",
+            chain: "chronyx",
             chain_id: self.genesis.chain_id.clone(),
             genesis_hash: hex::encode(self.genesis_hash),
             poh_hash,
@@ -469,8 +469,8 @@ pub async fn run_slot_clock(node: Arc<Node>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chronyx_core::genesis::{GenesisAllocation, GenesisValidator, QUANTA_PER_CHRONYX};
     use std::path::{Path, PathBuf};
-    use tachyon_core::genesis::{GenesisAllocation, GenesisValidator, LAMPORTS_PER_TACHYON};
 
     struct TempDir(PathBuf);
 
@@ -480,7 +480,7 @@ mod tests {
             static COUNTER: AtomicU64 = AtomicU64::new(0);
             let n = COUNTER.fetch_add(1, Ordering::Relaxed);
             let dir =
-                std::env::temp_dir().join(format!("tachyon-test-{tag}-{}-{n}", std::process::id()));
+                std::env::temp_dir().join(format!("chronyx-test-{tag}-{}-{n}", std::process::id()));
             std::fs::create_dir_all(&dir).expect("temp dir");
             Self(dir)
         }
@@ -509,7 +509,7 @@ mod tests {
         });
         genesis.allocations.push(GenesisAllocation {
             pubkey,
-            lamports: 100 * LAMPORTS_PER_TACHYON,
+            quanta: 100 * QUANTA_PER_CHRONYX,
         });
         genesis.validate().unwrap();
 

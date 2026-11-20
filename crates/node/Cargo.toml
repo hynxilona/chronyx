@@ -1,15 +1,15 @@
 [package]
-name = "tachyon-node"
+name = "chronyx-node"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "tachyond"
+name = "chronyxd"
 path = "src/main.rs"
 
 [dependencies]
-tachyon-core = { path = "../core" }
+chronyx-core = { path = "../core" }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "time", "sync", "signal", "io-util"] }
 axum = "0.8"
 clap = { version = "4", features = ["derive"] }

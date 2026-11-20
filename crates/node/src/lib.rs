@@ -1,4 +1,4 @@
-//! Tachyon node library: config, ledger, gossip, runtime, RPC.
+//! Chronyx node library: config, ledger, gossip, runtime, RPC.
 
 pub mod config;
 pub mod ledger;

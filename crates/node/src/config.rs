@@ -43,9 +43,9 @@ impl NodeConfig {
     }
 }
 
-/// `~/.tachyon` on every platform, via `dirs`.
+/// `~/.chronyx` on every platform, via `dirs`.
 pub fn default_home() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(".tachyon")
+        .join(".chronyx")
 }

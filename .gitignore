@@ -3,7 +3,7 @@
 /data
 .env
 
-# Local devnets created by `tachyon devnet init` / `join`
+# Local devnets created by `chronyx devnet init` / `join`
 /devnet
 /node2
 *.jsonl

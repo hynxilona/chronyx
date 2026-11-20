@@ -7,20 +7,20 @@ use ed25519_dalek::{Signature, Signer, Verifier, VerifyingKey};
 use serde::Serialize;
 use serde_json::{json, Value};
 
-use tachyon_core::genesis::{
-    parse_key, Genesis, GenesisAllocation, GenesisValidator, LAMPORTS_PER_TACHYON,
+use chronyx_core::genesis::{
+    parse_key, Genesis, GenesisAllocation, GenesisValidator, QUANTA_PER_CHRONYX,
 };
-use tachyon_core::poh::PohRecorder;
-use tachyon_core::{pow, Block, KeypairFile, Transaction};
+use chronyx_core::poh::PohRecorder;
+use chronyx_core::{pow, Block, KeypairFile, Transaction};
 
 use crate::cfg::{self, home, CliConfig};
 use crate::net;
 
 #[derive(Parser, Debug)]
-#[command(name = "tachyon", version, about = "Tachyon devnet CLI")]
+#[command(name = "chronyx", version, about = "Chronyx devnet CLI")]
 pub struct Cli {
     /// RPC endpoint. Overrides the stored config for this invocation.
-    #[arg(long, short = 'u', global = true, env = "TACHYON_RPC")]
+    #[arg(long, short = 'u', global = true, env = "CHRONYX_RPC")]
     pub url: Option<String>,
     #[command(subcommand)]
     pub cmd: Cmd,
@@ -56,12 +56,12 @@ pub enum Cmd {
         cmd: AccountCmd,
     },
     /// Request devnet funds from the faucet.
-    Airdrop { pubkey: String, lamports: u64 },
+    Airdrop { pubkey: String, quanta: u64 },
     /// Sign and submit a transfer.
     Transfer {
         keypair: PathBuf,
         to: String,
-        lamports: u64,
+        quanta: u64,
     },
     /// Transaction utilities.
     Tx {
@@ -172,7 +172,7 @@ pub enum GenesisCmd {
         #[arg(default_value = "genesis.json")]
         path: PathBuf,
         pubkey: String,
-        lamports: u64,
+        quanta: u64,
     },
 }
 
@@ -201,7 +201,7 @@ pub enum TxCmd {
     New {
         keypair: PathBuf,
         to: String,
-        lamports: u64,
+        quanta: u64,
     },
     Send {
         file: PathBuf,
@@ -234,7 +234,7 @@ pub enum PowCmd {
     Mine {
         #[arg(long, default_value_t = 16)]
         difficulty: u32,
-        #[arg(long, default_value = "tachyon")]
+        #[arg(long, default_value = "chronyx")]
         seed: String,
     },
     Verify {
@@ -304,7 +304,7 @@ pub fn run(cmd: Cmd, url: Option<String>) -> anyhow::Result<()> {
 
     match cmd {
         Cmd::Version => {
-            println!("tachyon-cli {}", env!("CARGO_PKG_VERSION"));
+            println!("chronyx-cli {}", env!("CARGO_PKG_VERSION"));
             println!("core        {}", env!("CARGO_PKG_VERSION"));
         }
 
@@ -314,11 +314,11 @@ pub fn run(cmd: Cmd, url: Option<String>) -> anyhow::Result<()> {
         Cmd::Cluster { cmd } => cluster_cmd(&cfg, cmd)?,
         Cmd::Account { cmd } => account_cmd(&cfg, cmd)?,
 
-        Cmd::Airdrop { pubkey, lamports } => {
+        Cmd::Airdrop { pubkey, quanta } => {
             let resp = net::post(
                 &cfg,
                 "/faucet",
-                json!({ "pubkey": pubkey, "lamports": lamports }),
+                json!({ "pubkey": pubkey, "quanta": quanta }),
             )?;
             print_json(&resp);
         }
@@ -326,8 +326,8 @@ pub fn run(cmd: Cmd, url: Option<String>) -> anyhow::Result<()> {
         Cmd::Transfer {
             keypair,
             to,
-            lamports,
-        } => transfer(&cfg, &keypair, &to, lamports)?,
+            quanta,
+        } => transfer(&cfg, &keypair, &to, quanta)?,
 
         Cmd::Tx { cmd } => tx_cmd(&cfg, cmd)?,
         Cmd::Block { cmd } => block_cmd(&cfg, cmd)?,
@@ -545,11 +545,11 @@ fn genesis_cmd(cmd: GenesisCmd) -> anyhow::Result<()> {
         GenesisCmd::AddAllocation {
             path,
             pubkey,
-            lamports,
+            quanta,
         } => {
             let mut g = load_genesis(&path)?;
             parse_key(&pubkey).map_err(|e| anyhow!(e))?;
-            g.allocations.push(GenesisAllocation { pubkey, lamports });
+            g.allocations.push(GenesisAllocation { pubkey, quanta });
             g.validate().map_err(|e| anyhow!(e))?;
             std::fs::write(&path, g.to_json())?;
             println!("allocations {}", g.allocations.len());
@@ -575,7 +575,10 @@ fn cluster_cmd(cfg: &CliConfig, cmd: ClusterCmd) -> anyhow::Result<()> {
         }
         ClusterCmd::Version => {
             let status = net::get(cfg, "/status")?;
-            println!("chain_id     {}", status["chain_id"]);
+            println!(
+                "chain_id     {}",
+                status["chain_id"].as_str().unwrap_or("?")
+            );
             println!("genesis_hash {}", status["genesis_hash"]);
             println!("slot_ms      {}", status["slot_ms"]);
         }
@@ -601,10 +604,10 @@ fn account_cmd(cfg: &CliConfig, cmd: AccountCmd) -> anyhow::Result<()> {
     match cmd {
         AccountCmd::Balance { pubkey } => {
             let resp = net::get(cfg, &format!("/balance/{pubkey}"))?;
-            let lamports = resp["lamports"].as_u64().unwrap_or(0);
+            let quanta = resp["quanta"].as_u64().unwrap_or(0);
             println!(
-                "{lamports} lamports ({:.9} TACHYON)",
-                lamports as f64 / LAMPORTS_PER_TACHYON as f64
+                "{quanta} quanta ({:.9} CHRONYX)",
+                quanta as f64 / QUANTA_PER_CHRONYX as f64
             );
         }
         AccountCmd::Show { pubkey } => print_json(&net::get(cfg, &format!("/account/{pubkey}"))?),
@@ -613,7 +616,7 @@ fn account_cmd(cfg: &CliConfig, cmd: AccountCmd) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn transfer(cfg: &CliConfig, keypair: &Path, to: &str, lamports: u64) -> anyhow::Result<()> {
+fn transfer(cfg: &CliConfig, keypair: &Path, to: &str, quanta: u64) -> anyhow::Result<()> {
     let (_, sk) = load_keypair(keypair)?;
     let from = hex::encode(sk.verifying_key().to_bytes());
 
@@ -621,7 +624,7 @@ fn transfer(cfg: &CliConfig, keypair: &Path, to: &str, lamports: u64) -> anyhow:
     let nonce = account["nonce"].as_u64().unwrap_or(0);
     let to_key = parse_key(to).map_err(|e| anyhow!(e))?;
 
-    let tx = Transaction::sign(&sk, to_key, lamports, nonce);
+    let tx = Transaction::sign(&sk, to_key, quanta, nonce);
     let body = serde_json::to_value(&tx)?;
     let resp = net::post(cfg, "/tx", body)?;
     print_json(&resp);
@@ -635,14 +638,14 @@ fn tx_cmd(cfg: &CliConfig, cmd: TxCmd) -> anyhow::Result<()> {
         TxCmd::New {
             keypair,
             to,
-            lamports,
+            quanta,
         } => {
             let (_, sk) = load_keypair(&keypair)?;
             let from = hex::encode(sk.verifying_key().to_bytes());
             let account = net::get(cfg, &format!("/account/{from}"))?;
             let nonce = account["nonce"].as_u64().unwrap_or(0);
             let to_key = parse_key(&to).map_err(|e| anyhow!(e))?;
-            let tx = Transaction::sign(&sk, to_key, lamports, nonce);
+            let tx = Transaction::sign(&sk, to_key, quanta, nonce);
             println!("{}", serde_json::to_string_pretty(&tx)?);
         }
         TxCmd::Send { file } => {
@@ -732,7 +735,7 @@ fn print_block(block: &Block) {
     println!("txs       {}", block.transactions.len());
     for tx in &block.transactions {
         println!(
-            "  {}  {} -> {}  {} lamports  (nonce {})",
+            "  {}  {} -> {}  {} quanta  (nonce {})",
             short(&hex::encode(tx.hash())),
             short(&hex::encode(tx.from)),
             short(&hex::encode(tx.to)),
@@ -775,7 +778,7 @@ fn pow_cmd(cmd: PowCmd) -> anyhow::Result<()> {
             println!("elapsed    {} ms", start.elapsed().as_millis());
             println!("verify     {}", pow::verify(&seed_hash, nonce, difficulty));
             println!();
-            println!("check it with: tachyon pow verify {seed} {nonce} {difficulty}");
+            println!("check it with: chronyx pow verify {seed} {nonce} {difficulty}");
         }
         PowCmd::Verify {
             seed,
@@ -817,7 +820,7 @@ fn validator_cmd(cfg: &CliConfig, cmd: ValidatorCmd) -> anyhow::Result<()> {
             let (kp, _) = load_keypair(&path)?;
             println!("Add this identity to genesis, then restart the cluster:");
             println!();
-            println!("  tachyon genesis add-validator genesis.json {}", kp.public);
+            println!("  chronyx genesis add-validator genesis.json {}", kp.public);
             println!();
             println!("PoW admission (automatic joining) lands in v2.");
         }
@@ -844,7 +847,7 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
             });
             genesis.allocations.push(GenesisAllocation {
                 pubkey: kp.public.clone(),
-                lamports: 1_000 * LAMPORTS_PER_TACHYON,
+                quanta: 1_000 * QUANTA_PER_CHRONYX,
             });
 
             genesis.validate().map_err(|e| anyhow!(e))?;
@@ -875,7 +878,7 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
             println!("identity   {}", kp.public);
             println!();
             println!("start the node with:");
-            println!("  tachyond --config {}", dir.join("node.toml").display());
+            println!("  chronyxd --config {}", dir.join("node.toml").display());
         }
 
         DevnetCmd::Join { seed, dir, peer } => {
@@ -922,11 +925,11 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
             println!("identity {}", kp.public);
             println!();
             println!("start the node with:");
-            println!("  tachyond --config {}", dir.join("node.toml").display());
+            println!("  chronyxd --config {}", dir.join("node.toml").display());
             println!();
             println!("tip: running a second node on this same machine? give it unique ports:");
             println!(
-                "  tachyond --config {} --rpc 127.0.0.1:8900 --p2p 127.0.0.1:9001",
+                "  chronyxd --config {} --rpc 127.0.0.1:8900 --p2p 127.0.0.1:9001",
                 dir.join("node.toml").display()
             );
         }
@@ -941,12 +944,12 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
             println!("validators  {}", g.validators.len());
             println!();
             println!("1. Run a seed node on a public host:");
-            println!("     tachyond --config node.toml --rpc 0.0.0.0:8899 --p2p 0.0.0.0:9000");
+            println!("     chronyxd --config node.toml --rpc 0.0.0.0:8899 --p2p 0.0.0.0:9000");
             println!("2. Open ports 8899 (RPC) and 9000 (p2p).");
             println!("3. Tell people to join (they should check the genesis hash above):");
-            println!("     tachyon devnet join http://YOUR_HOST:8899 --peer YOUR_HOST:9000");
+            println!("     chronyx devnet join http://YOUR_HOST:8899 --peer YOUR_HOST:9000");
             println!("4. Fund them:");
-            println!("     tachyon airdrop <their-pubkey> 1000000000");
+            println!("     chronyx airdrop <their-pubkey> 1000000000");
             println!();
             println!("Never expose the faucet on a network with real value.");
         }
@@ -1010,7 +1013,7 @@ fn bench_cmd(cmd: BenchCmd) -> anyhow::Result<()> {
 // ---------------------------------------------------------------- doctor
 
 fn doctor(cfg: &CliConfig) -> anyhow::Result<()> {
-    println!("tachyon doctor");
+    println!("chronyx doctor");
     println!();
     println!("config     {}", cfg::config_path().display());
     println!("rpc_url    {}", cfg.rpc_url);
@@ -1038,7 +1041,7 @@ fn doctor(cfg: &CliConfig) -> anyhow::Result<()> {
 
     if let Ok(status) = net::get(cfg, "/status") {
         println!();
-        println!("chain_id   {}", status["chain_id"]);
+        println!("chain_id   {}", status["chain_id"].as_str().unwrap_or("?"));
         println!("slot       {}", status["slot"]);
         println!("height     {}", status["height"]);
         println!("validators {}", status["validators"]);

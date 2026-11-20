@@ -1,4 +1,8 @@
-# Tachyon
+<p align="center">
+  <img src="assets/chronyx-logo-dark.png" alt="Chronyx" width="520">
+</p>
+
+# Chronyx
 
 > **PoH orders. PoA finalizes. PoW admits.**
 
@@ -26,7 +30,7 @@ Working today:
 - ✅ **Native token** — Ed25519-signed transfers, per-account nonce, atomic apply
 - ✅ **Append-only ledger** — `blocks.jsonl`, replayed on restart, state reconstructed
 - ✅ **TCP gossip** — hello/height handshake, catch-up (`GetBlocks`), live `Block` fan-out
-- ✅ **Devnet faucet** — nonce-safe under concurrent requests, 1 000 TACHYON per request
+- ✅ **Devnet faucet** — nonce-safe under concurrent requests, 1 000 CHRONYX per request
 - ✅ **HTTP RPC** — 15 routes, JSON in/out
 - ✅ **CLI** — ~50 commands, Solana-style namespacing
 - ✅ **30 tests** — PoH, PoA, PoW, state, block validation, ledger, restart replay, catch-up
@@ -47,35 +51,35 @@ Create a devnet and start the node:
 
 ```bash
 # 1. write genesis.json, an identity, node.toml, and point the CLI at them
-tachyon devnet init --dir ./devnet --validators 3
+chronyx devnet init --dir ./devnet --validators 3
 
 # 2. run the node (adds your identity to the genesis validator set)
-tachyond --config ./devnet/node.toml
+chronyxd --config ./devnet/node.toml
 ```
 
-`tachyon devnet init` also writes `~/.tachyon/cli.toml`, so the rest is
+`chronyx devnet init` also writes `~/.chronyx/cli.toml`, so the rest is
 zero-config:
 
 ```bash
-tachyon cluster info       # chain id, genesis hash, height, slot, supply
-tachyon cluster validators # set, quorum, next leader
-tachyon doctor             # is everything wired up?
+chronyx cluster info       # chain id, genesis hash, height, slot, supply
+chronyx cluster validators # set, quorum, next leader
+chronyx doctor             # is everything wired up?
 ```
 
 Fund a wallet and move coins:
 
 ```bash
-tachyon keypair new --out ./devnet/alice.json
-tachyon airdrop <alice-pubkey> 10000000000      # 10 TACHYON
-tachyon account balance <alice-pubkey>
-tachyon transfer ./devnet/alice.json <bob-pubkey> 2500000000
+chronyx keypair new --out ./devnet/alice.json
+chronyx airdrop <alice-pubkey> 10000000000      # 10 CHRONYX
+chronyx account balance <alice-pubkey>
+chronyx transfer ./devnet/alice.json <bob-pubkey> 2500000000
 ```
 
 Add a second node that follows the same chain:
 
 ```bash
-tachyon devnet join http://127.0.0.1:8899 --dir ./node2 --peer 127.0.0.1:9000
-tachyond --config ./node2/node.toml --rpc 127.0.0.1:8900 --p2p 127.0.0.1:9001
+chronyx devnet join http://127.0.0.1:8899 --dir ./node2 --peer 127.0.0.1:9000
+chronyxd --config ./node2/node.toml --rpc 127.0.0.1:8900 --p2p 127.0.0.1:9001
 ```
 
 It handshakes, pulls every block it missed, applies them in order, and stays
@@ -84,7 +88,7 @@ persisted ledger, so a brand-new node can join a devnet that has been running
 for hours — it does not depend on the in-memory block ring.
 
 Default ports are **8899** (HTTP RPC) and **9000** (p2p). Override them per
-node with `--rpc` / `--p2p`, and point the CLI with `--url` or `TACHYON_RPC`.
+node with `--rpc` / `--p2p`, and point the CLI with `--url` or `CHRONYX_RPC`.
 
 ---
 
@@ -117,9 +121,9 @@ tick (50 ms) ──► PoH hash ──► current_slot = (now - genesis_time) / 
 
 PoA gets you 400 ms finality, but it needs a membership answer. Hashcash-style
 PoW is that answer: admission costs work, not capital, so there is no token sale
-gate and no stake requirement. `tachyon pow mine --difficulty 20` produces a
+gate and no stake requirement. `chronyx pow mine --difficulty 20` produces a
 proof in ~14 s on one core and verifies in microseconds; it prints the exact
-`tachyon pow verify …` command to check it. v1 exposes the gate as a CLI/RPC
+`chronyx pow verify …` command to check it. v1 exposes the gate as a CLI/RPC
 primitive; wiring proofs into an automatic join transaction is the v2 headline.
 
 ## Token model
@@ -127,19 +131,19 @@ primitive; wiring proofs into an automatic join transaction is the v2 headline.
 Only two fields per account:
 
 ```rust
-struct Account { lamports: u64, nonce: u64 }
+struct Account { quanta: u64, nonce: u64 }
 ```
 
 A transfer is a signed message `(from, to, amount, nonce)`; applying it checks
-the signature, the nonce, and the balance, then moves lamports and bumps the
-nonce. 1 TACHYON = 1 000 000 000 lamports. Supply is created only by genesis
+the signature, the nonce, and the balance, then moves quanta and bumps the
+nonce. 1 CHRONYX = 1 000 000 000 quanta. Supply is created only by genesis
 allocations; nothing mints at runtime. This is a native asset, not a contract.
 
 ---
 
 ## CLI
 
-Global flag: `-u, --url <RPC>` (also `TACHYON_RPC`) overrides the stored endpoint.
+Global flag: `-u, --url <RPC>` (also `CHRONYX_RPC`) overrides the stored endpoint.
 
 | Group | Commands |
 |---|---|
@@ -165,16 +169,16 @@ Global flag: `-u, --url <RPC>` (also `TACHYON_RPC`) overrides the stored endpoin
 | GET | `/status` | chain id, genesis hash, slot, height, mempool, peers, supply |
 | GET | `/genesis` | genesis JSON + its hash |
 | GET | `/validators` | set, quorum, next leader |
-| GET | `/supply` | total lamports, account count |
+| GET | `/supply` | total quanta, account count |
 | GET | `/peers` | connected peer count |
-| GET | `/account/{pubkey}` | lamports + nonce |
+| GET | `/account/{pubkey}` | quanta + nonce |
 | GET | `/accounts` | full account snapshot |
-| GET | `/balance/{pubkey}` | lamports |
+| GET | `/balance/{pubkey}` | quanta |
 | GET | `/block/{slot}` | one block |
 | GET | `/blocks` | newest page from the ring; `?from=<slot>&limit=<n>` pages the ledger |
 | GET | `/tx/{hash}` | look up a confirmed transaction and its slot |
 | POST | `/tx` | submit a signed `Transaction` |
-| POST | `/faucet` | `{ "pubkey", "lamports" }` |
+| POST | `/faucet` | `{ "pubkey", "quanta" }` |
 | GET | `/mine` | mine a PoW admission proof (demo) |
 
 ---
@@ -197,8 +201,8 @@ crates/
     src/p2p.rs       length-prefixed JSON TCP gossip
     src/config.rs    node.toml
     src/rpc.rs       axum routes
-    src/main.rs      tachyond binary
-  cli/           `tachyon` binary (~50 commands)
+    src/main.rs      chronyxd binary
+  cli/           `chronyx` binary (~50 commands)
 ```
 
 ## Design notes
@@ -232,8 +236,8 @@ hijacked by a stranger with a laptop.
 To grow the set today, add the identity and start a new devnet generation:
 
 ```bash
-tachyon validator join ./my-keypair.json     # prints the exact commands
-tachyon genesis add-validator genesis.json <pubkey> --name alice
+chronyx validator join ./my-keypair.json     # prints the exact commands
+chronyx genesis add-validator genesis.json <pubkey> --name alice
 # every node restarts against the new genesis hash
 ```
 

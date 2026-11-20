@@ -7,7 +7,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 
-use tachyon_core::Block;
+use chronyx_core::Block;
 
 pub struct Ledger {
     path: PathBuf,
