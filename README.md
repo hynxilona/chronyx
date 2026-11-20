@@ -6,8 +6,7 @@
 
 > **PoH orders. PoA finalizes. PoW admits.**
 
-A small, fast Rust chain built from scratch — no framework, no VM, no ERC-20.
-Native accounts, signed transfers, real persistence, real gossip.
+
 
 | Mechanism | Role | Why |
 |---|---|---|
