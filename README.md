@@ -46,11 +46,14 @@ Not in v1: dynamic validator admission, QUIC, light clients, explorer.
 
 ## Quickstart
 
-Build:
+Build from source:
 
 ```bash
 cargo build --release
 ```
+
+Or grab `chronyx` + `chronyxd` for Linux, macOS (arm64 / x86_64), or Windows
+from [Releases](https://github.com/hynxilona/chronyx/releases).
 
 Create a devnet and start the node:
 
