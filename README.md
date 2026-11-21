@@ -39,6 +39,8 @@ Working today:
 - ✅ **HTTP RPC** — 15 routes, JSON in/out
 - ✅ **CLI** — ~50 commands, Solana-style namespacing
 - ✅ **31 tests** — PoH, PoA, PoW, state, block validation, ledger, restart replay, catch-up
+- ✅ **Supply invariants** — genesis cap, transfer conservation, no mint path (35 tests total)
+- ✅ **CI + security** — fmt/clippy/tests, supply guard, secret scan, dependency audit
 
 Not in v1: dynamic validator admission, QUIC, light clients, explorer.
 
@@ -271,6 +273,9 @@ every signature, serve RPC, and can be promoted in the next generation.
 Automatic, PoW-gated admission — a `Join` transaction carrying a valid
 hashcash proof, validator set updates applied by epoch — is the v2 headline.
 
+Operating details, hardware, ports and the application process:
+[docs/VALIDATORS.md](docs/VALIDATORS.md) · [site](https://hynxilona.github.io/chronyx/validators.html)
+
 ## Roadmap
 
 - **v1.5** ✅ multi-node devnet, ledger replay, faucet, CLI, full block validation
@@ -289,6 +294,24 @@ hashcash proof, validator set updates applied by epoch — is the v2 headline.
 - **Devnet faucet is a dev key.** Never enable it where funds have value.
 - **Not audited. Not a mainnet. Do not put value on this.**
 - Windows uses IOCP; deploy on Linux for `io_uring`-class tail latency.
+
+## Contributing
+
+Contributions run through a gate, not a vibe: format, clippy, tests, a supply
+guard, an invariant suite, a secret scan, a dependency audit and a binary-file
+check. Files that decide balances or consensus have a `CODEOWNERS` entry and
+need a review that says why nothing can move.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the rules and
+[docs/GROWTH.md](docs/GROWTH.md) if you want to help with something other than
+code.
+
+## Funding
+
+No presale, no token sale, no investors. Money goes to an external consensus
+audit, testnet infrastructure and twelve months of bootstrap validators —
+roughly $45k to launch responsibly. Costs, tiers and the transparency rules are
+in [docs/FUNDING.md](docs/FUNDING.md).
 
 ## License
 
