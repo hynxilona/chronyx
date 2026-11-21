@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Chronyx works — PoH orders, PoA finalizes, PoW admits</title>
+<meta name="description" content="The slot lifecycle in Chronyx: verifiable ordering with Proof of History, 400 ms finality with Proof of Authority, and Proof of Work for validator admission.">
+<meta property="og:title" content="How Chronyx works">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="how">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">How it works</p>
+    <h1>One block,<br>four hundred milliseconds.</h1>
+    <p class="lede">
+      A slot is the unit of time. Eight PoH ticks fit inside it, one leader fills it,
+      and a quorum signs it. Everything else — accounts, transfers, gossip — hangs
+      off that rhythm.
+    </p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>The slot, end to end</h2>
+          <p>What actually happens between two blocks.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>The leader is already known</h3>
+            <p>Validators are ordered in genesis. Slot <code>n</code> belongs to
+            validator <code>n mod 4</code>. No election, no auction, no waiting to
+            find out who is allowed to produce.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Eight ticks establish the order</h3>
+            <p>Each tick is <code>SHA-256(previous_hash)</code>, 50 ms apart. The hash
+            chain proves the leader could not have produced tick 7 before tick 6, and
+            gives every node the same sequence for the transactions inside the slot.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Transactions apply in that order</h3>
+            <p>A transfer carries sender, receiver, amount, nonce and an Ed25519
+            signature. Nonces make replays fail; the amount is checked against the
+            balance; the state update is atomic. There is no VM and nothing to
+            re-execute twice.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>The block is sealed and signed</h3>
+            <p>Header holds the parent hash, slot, merkle root over transactions, the
+            PoH hash at the end of the slot, and the leader's signature.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Quorum makes it final</h3>
+            <p>Three of four validators sign the block. There is no reorg window after
+            that: the next leader builds on it or the chain stalls. Stalling is
+            visible, which is the point.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Gossip carries it</h3>
+            <p>Plain TCP. Peers exchange height on connect, pull the gap with
+            <code>GetBlocks</code>, then receive live blocks as they seal. A node that
+            was offline for an hour replays the ledger from disk and catches up the
+            same way.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Touch the clock</h2>
+          <p>This is the real construction, running in your browser. Eight ticks, eight hashes.</p>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head">
+          <span>poh_chain · sha-256</span>
+          <button class="btn ghost" data-poh-run type="button">Run 8 ticks</button>
+        </div>
+        <div class="demo-body">
+          <ol id="poh-ticks" aria-live="polite"></ol>
+          <p class="stat" id="poh-stat">Each row is the hash of the row above it. Nothing else goes in.</p>
+        </div>
+      </div>
+
+      <p class="quiet small" style="margin-top:16px">
+        The chain in the node does the same thing, except each tick is hashed with the
+        slot's transaction data folded in and stored in the ledger.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>The door needs work</h2>
+          <p>PoW is how a stranger earns a validator slot without buying one.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <p>Mine a proof against a difficulty target:</p>
+          <div class="code">
+            <div class="code-head"><span>shell</span><button class="copy" data-copy="c-mine" type="button">copy</button></div>
+<pre id="c-mine">chronyx pow mine --difficulty 20
+chronyx pow verify &lt;proof-hex&gt;</pre>
+          </div>
+          <p class="quiet small">Difficulty 20 is roughly a million hashes — seconds on a laptop,
+          minutes on a small VPS. It is a cost, not a lottery: the proof is checked in
+          microseconds and cannot be reused.</p>
+        </div>
+        <div>
+          <p>What the proof is bound to:</p>
+          <table class="tbl">
+            <tr><td>Identity</td><td class="mono">Ed25519 pubkey</td></tr>
+            <tr><td>Challenge</td><td class="mono">seed + identity</td></tr>
+            <tr><td>Target</td><td class="mono">leading zero bits</td></tr>
+            <tr><td>Verification</td><td class="mono">one SHA-256</td></tr>
+          </table>
+          <p class="note warn" style="margin-top:18px">
+            <strong>v1 status.</strong> Proofs mine and verify today. Automatic admission
+            is not on main yet — validators are written into genesis, and the
+            application process is in <a href="validators.html">Validators</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>Where the code is</h2>
+          <p>No generated clients, no framework, no magic.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>File</th><th>What lives there</th></tr>
+        <tr><td class="mono">crates/core/src/poh.rs</td><td>tick chain, verification, hash math</td></tr>
+        <tr><td class="mono">crates/core/src/poa.rs</td><td>leader rotation, quorum, slot schedule</td></tr>
+        <tr><td class="mono">crates/core/src/pow.rs</td><td>proof mining and verification</td></tr>
+        <tr><td class="mono">crates/core/src/state.rs</td><td>accounts, nonces, atomic transfers</td></tr>
+        <tr><td class="mono">crates/core/src/types.rs</td><td>blocks, headers, transaction signing</td></tr>
+        <tr><td class="mono">crates/node/src/node.rs</td><td>slot loop, sealing, gossip fan-out</td></tr>
+        <tr><td class="mono">crates/node/src/ledger.rs</td><td>append-only ledger, replay on restart</td></tr>
+        <tr><td class="mono">crates/node/src/rpc.rs</td><td>15 routes, JSON in, JSON out</td></tr>
+      </table>
+
+      <p style="margin-top:24px">
+        <a href="https://github.com/hynxilona/chronyx">github.com/hynxilona/chronyx</a>
+        — MIT, 35 tests, and a supply guard that fails the build if anything learns to mint.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">05</span>
+        <div>
+          <h2>What v1 does not do</h2>
+          <p>Said plainly, so nobody has to discover it the hard way.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <ul class="quiet">
+          <li>No dynamic validator admission — genesis only</li>
+          <li>No fees and no rewards: devnet has no economy</li>
+          <li>No light clients or proofs of state</li>
+        </ul>
+        <ul class="quiet">
+          <li>No explorer, no indexer, no wallet UI</li>
+          <li>No QUIC, no gossip encryption</li>
+          <li>No audit. Not one line of it</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

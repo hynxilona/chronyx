@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support — fund the audit, not a token</title>
+<meta name="description" content="Chronyx has no presale and no token sale. Funding goes to an external consensus audit, testnet infrastructure and twelve months of bootstrap validators.">
+<meta property="og:title" content="Support Chronyx">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="support">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">Support</p>
+    <h1>No presale.<br>An audit bill.</h1>
+    <p class="lede">
+      Chronyx has no token sale, no investors and no revenue. The devnet token is
+      worth nothing and stays that way. What money buys here is time and a
+      security review, and every unit of it is accounted for in public.
+    </p>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/sponsors/hynxilona">Sponsor on GitHub</a>
+      <a class="btn" href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Full funding doc</a>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>What mainnet actually costs</h2>
+          <p>Quotes in hand beat estimates on a slide.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>Item</th><th>Range</th><th>Why it is on the list</th></tr>
+        <tr><td>External audit — consensus and ledger</td><td class="mono">$25k–60k</td><td>the code that decides balances gets read by someone paid to break it</td></tr>
+        <tr><td>Second audit — RPC, crypto edges</td><td class="mono">$8k–20k</td><td>faucet, nonce handling, key parsing, DoS surface</td></tr>
+        <tr><td>Public testnet, six months</td><td class="mono">$2k–5k</td><td>four to eight small VPS, backups, monitoring</td></tr>
+        <tr><td>Bootstrap validators, twelve months</td><td class="mono">$6k–12k</td><td>operators should not pay out of pocket to keep the chain alive</td></tr>
+        <tr><td>Domain, keys, hardware wallet, buffer</td><td class="mono">$1k–2k</td><td>boring, necessary</td></tr>
+        <tr><td><strong>Floor to launch responsibly</strong></td><td class="mono"><strong>~$45k</strong></td><td>below this the honest answer is "wait"</td></tr>
+      </table>
+
+      <p class="small quiet" style="margin-top:16px">No salaries are in that table. The work is unpaid.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Ways to fund it</h2>
+          <p>In order of preference, because they differ in strings attached.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <span class="tag">Recurring</span>
+          <h3>GitHub Sponsors</h3>
+          <p>Public, cancellable, no influence over the protocol. The Sponsor button
+          lives on the repo; one-time and monthly both work.</p>
+        </div>
+        <div class="panel">
+          <span class="tag">Infrastructure</span>
+          <h3>Validator sponsorship</h3>
+          <p>Pay for a bootstrap slot for a year. Your name in
+          <code>cluster validators</code> and the README. No say in consensus, ever.</p>
+        </div>
+        <div class="panel">
+          <span class="tag">Work</span>
+          <h3>Bounties</h3>
+          <p>Small, scoped, paid on merge: an RPC route with tests, a fuzz target, a
+          client library. The cheapest useful work money can buy.</p>
+        </div>
+        <div class="panel">
+          <span class="tag">One-off</span>
+          <h3>Direct</h3>
+          <p>A donation address is published once the wallet is set up, and every
+          inflow is listed. No address is live yet — do not send anything to a
+          look-alike.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>Where it goes, in writing</h2>
+          <p>Transparency is a file in the repo, not a promise in a post.</p>
+        </div>
+      </div>
+
+      <ul class="steps">
+        <li>
+          <div>
+            <h3>Every expense over $100 is listed</h3>
+            <p>Date, amount, purpose, in <code>docs/SPONSORS.md</code>. If a vendor
+            asks not to be named, the line says "vendor, name withheld" and keeps the
+            amount.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Every audit is published in full</h3>
+            <p>Including the findings that make the maintainer look bad. A report with
+            no findings is a report nobody read.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Running out gets said out loud</h3>
+            <p>If the money stops, the roadmap says so instead of shipping a
+            half-audited mainnet and hoping.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>What this is not</h2>
+          <p>The list matters more than the pitch.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <ul class="quiet">
+          <li>Not a presale, not a private round, not a SAFT</li>
+          <li>Not an airdrop, and no points program</li>
+          <li>Not an investment, and no token will be sold to you</li>
+        </ul>
+        <ul class="quiet">
+          <li>No listing fees, market makers or paid shills</li>
+          <li>No sponsor gets protocol control or supply</li>
+          <li>No mainnet date will ever be announced before an audit</li>
+        </ul>
+      </div>
+
+      <p class="note warn" style="margin-top:26px">
+        <strong>Current status: unfunded.</strong> Applying to GitHub Sponsors and two
+        grant programs, audit quotes requested. This page changes the day something
+        changes, not when it is convenient.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

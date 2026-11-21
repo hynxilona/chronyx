@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contribute — reviewed, checked, merged</title>
+<meta name="description" content="How to contribute to Chronyx: propose, open a scoped PR, pass the supply guard, secret scan and review, then merge. Nothing that touches balances ships without a human.">
+<meta property="og:title" content="Contribute to Chronyx">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="contribute">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">Contribute</p>
+    <h1>Bring code.<br>Leave the balances alone.</h1>
+    <p class="lede">
+      Every change is reviewed, and every change is checked by a machine before a
+      person reads it. A pull request that could create quanta, move someone's
+      balance, or slip a binary into the tree does not merge — not with a good
+      explanation, not with a green test run.
+    </p>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/hynxilona/chronyx/issues/new">Propose a change</a>
+      <a class="btn" href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Read the rules</a>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>How a change gets in</h2>
+          <p>Five steps. None of them can be skipped, including by the maintainer.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>Propose it as an issue</h3>
+            <p>Describe the problem before the patch. Consensus, balance and supply
+            changes say so in the first line, because those get a design note before
+            anyone writes code.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Open one scoped PR</h3>
+            <p>One idea per PR. A diff a reviewer can hold in their head gets read
+            properly; a 2,000-line PR gets skimmed, and skimming is how bugs land.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Pass the machines</h3>
+            <p>Format, clippy, tests, the supply guard, the invariant suite, the secret
+            scan, the dependency audit, and a binary-file check. The full list is below.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Get a human</h3>
+            <p><code>CODEOWNERS</code> covers genesis, state, blocks, PoH, PoA, PoW, the
+            ledger and the release workflows. Those files need the maintainer to read
+            them and write down why balances cannot move.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Merge, squash, keep the reason</h3>
+            <p>The commit message keeps the <em>why</em>. The issue keeps the argument.
+            Six months later that is the only thing that explains the code.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>What the checks stop</h2>
+          <p>Each one exists because a specific class of accident is possible.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>Check</th><th>What it catches</th></tr>
+        <tr><td class="mono">cargo fmt · clippy -D warnings</td><td>unreadable diffs, dead code, sloppy error handling</td></tr>
+        <tr><td class="mono">cargo test --workspace</td><td>consensus and ledger regressions</td></tr>
+        <tr><td class="mono">scripts/guard-supply.sh</td><td>any new path that creates quanta, moved supply constants</td></tr>
+        <tr><td class="mono">invariants.rs</td><td>a transfer that mints, a genesis above the cap</td></tr>
+        <tr><td class="mono">check-pr-files.sh</td><td>binary blobs, droppers, 800-line surprise diffs</td></tr>
+        <tr><td class="mono">gitleaks</td><td>keys and tokens committed by accident</td></tr>
+        <tr><td class="mono">cargo audit</td><td>dependencies with known vulnerabilities</td></tr>
+      </table>
+
+      <p class="note" style="margin-top:22px">
+        <strong>The threat model is boring on purpose.</strong> The realistic attack on a
+        chain this young is not a clever cryptographic break — it is a friendly PR that
+        quietly adds one line to the account state. So that is what the pipeline is
+        built to make impossible to miss.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>Rejected on sight</h2>
+          <p>Not "needs discussion". Rejected.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <ul class="quiet">
+          <li>Anything that creates quanta outside genesis and transfer credit</li>
+          <li>A supply constant change without a public proposal</li>
+          <li>Binary files, archives or minified blobs in a diff</li>
+          <li><code>unsafe</code> without the invariant it upholds</li>
+        </ul>
+        <ul class="quiet">
+          <li>Network or filesystem I/O inside <code>chronyx-core</code></li>
+          <li>Obfuscated identifiers or encoded strings</li>
+          <li>Telemetry of any kind, in the node or the CLI</li>
+          <li>"Temporary" debug paths that ship</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>Start small, get paid for it</h2>
+          <p>Bounties are small and specific because small and specific gets finished.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <span class="tag">Good first issue</span>
+          <h3>Docs and edges</h3>
+          <p>Clearer error messages, <code>--help</code> text, pagination edge cases in
+          <code>/blocks</code>, tests around <code>tx status</code> and <code>pow verify</code>.</p>
+          <p style="margin-top:14px"><a href="https://github.com/hynxilona/chronyx/labels/good%20first%20issue">Browse the label →</a></p>
+        </div>
+        <div class="panel">
+          <span class="tag">Bounty</span>
+          <h3>Paid work</h3>
+          <p>An RPC route with tests, a fuzz target for transaction parsing, a client
+          library in another language. Scope agreed in the issue, paid on merge.</p>
+          <p style="margin-top:14px"><a href="support.html">How funding works →</a></p>
+        </div>
+      </div>
+
+      <p class="small quiet" style="margin-top:20px">
+        No bounty exists until it is written in an issue with an amount. Nothing is paid
+        retroactively, and no one is expected to work for free on a promise.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

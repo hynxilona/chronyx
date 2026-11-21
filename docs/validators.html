@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validators — run a node, apply for a slot</title>
+<meta name="description" content="Run a Chronyx follower node in two commands, then apply for a signing slot. Hardware, ports, PoW proofs and operating notes.">
+<meta property="og:title" content="Validators — Chronyx">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="validators">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">Validators</p>
+    <h1>Anyone can follow.<br>Four can sign.</h1>
+    <p class="lede">
+      A follower node syncs the chain, serves RPC and gossips blocks — two commands,
+      no application. A signing slot is different: there are four, they are fixed in
+      genesis, and right now they are handed out by hand.
+    </p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>The state of the set</h2>
+          <p>Read this before renting a server.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><td>Chain</td><td class="mono">chronyx-devnet-1</td></tr>
+        <tr><td>Genesis</td><td class="mono">37808ee8…a083cd</td></tr>
+        <tr><td>Validators</td><td class="mono">4 · quorum 3</td></tr>
+        <tr><td>Slot</td><td class="mono">400 ms · one block per validator per 4 slots</td></tr>
+        <tr><td>Rewards</td><td class="mono">none — no inflation, no fees on devnet</td></tr>
+        <tr><td>Admission</td><td><span class="pill warn">manual, genesis only</span></td></tr>
+      </table>
+
+      <p class="note warn" style="margin-top:22px">
+        <strong>PoW admission is the next milestone.</strong> Proofs mine and verify
+        today, but the switch that turns a proof into a scheduled slot is not on main.
+        Until it is, slots are assigned before a devnet reset and announced in the repo
+        first. Do not buy hardware for a slot you have not been offered.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Run a follower</h2>
+          <p>Do this first. It is the whole onboarding, and it works today.</p>
+        </div>
+      </div>
+
+      <div class="code">
+        <div class="code-head"><span>shell</span><button class="copy" data-copy="c-join" type="button">copy</button></div>
+<pre id="c-join">chronyx devnet join http://SEED_HOST:8899 --peer SEED_HOST:9000 --dir ./my-node
+chronyxd --config ./my-node/node.toml</pre>
+      </div>
+
+      <p class="quiet small">Check the genesis hash the join prints against the one above.
+      Different hash, different chain — stop and ask before syncing further.</p>
+
+      <p>Then verify from your own node instead of trusting anyone:</p>
+
+      <div class="code">
+        <div class="code-head"><span>shell</span><button class="copy" data-copy="c-check" type="button">copy</button></div>
+<pre id="c-check">chronyx -u http://127.0.0.1:8899 cluster health
+chronyx -u http://127.0.0.1:8899 cluster supply
+chronyx -u http://127.0.0.1:8899 cluster validators
+chronyx -u http://127.0.0.1:8899 cluster peers</pre>
+      </div>
+
+      <p><code>cluster supply</code> should read <code>600000000000000000</code> quanta. It
+      does that only if your node replayed the same ledger as everyone else.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>What a slot takes</h2>
+          <p>Small box, stable clock, boring operations.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h3>Machine</h3>
+          <ul class="quiet">
+            <li>2 vCPU, 4 GB RAM, 40 GB SSD</li>
+            <li>TCP 9000 reachable from peers</li>
+            <li>8899 only behind a proxy with rate limits</li>
+            <li>NTP on, or your slots land outside the window</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Commitment</h3>
+          <ul class="quiet">
+            <li>systemd or a container with <code>Restart=always</code></li>
+            <li>Identity key backed up, never pasted in an issue</li>
+            <li>One node per identity — double signing has no good story</li>
+            <li>Tell the repo before you take it down for maintenance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>Apply for a slot</h2>
+          <p>An issue, a keypair, and a proof of work. In that order.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>Generate an identity</h3>
+            <div class="code" style="margin-top:10px">
+              <div class="code-head"><span>shell</span><button class="copy" data-copy="c-key" type="button">copy</button></div>
+<pre id="c-key">chronyx keypair new --out ./validator.json
+chronyx keypair show ./validator.json</pre>
+            </div>
+            <p class="quiet small">Publish only the public key. The secret stays on the box.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Mine the admission proof</h3>
+            <div class="code" style="margin-top:10px">
+              <div class="code-head"><span>shell</span><button class="copy" data-copy="c-pow" type="button">copy</button></div>
+<pre id="c-pow">chronyx pow mine --difficulty 20
+chronyx pow verify &lt;proof-hex&gt;</pre>
+            </div>
+            <p class="quiet small">Difficulty 20 is about a million hashes. It proves the box can do
+            the work the post-v1 admission will require.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Open the issue</h3>
+            <p><a href="https://github.com/hynxilona/chronyx/issues/new">New issue</a> titled
+            <code>validator application: &lt;handle&gt;</code>. Include region, specs,
+            uptime commitment, public key and proof. Names in <code>cluster validators</code>
+            are opt-in.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Wait for the reset</h3>
+            <p>Slots for the current devnet are full. Applications are queued for the next
+            reset, and everyone in the queue gets pinged before it happens — no surprises,
+            no silent wipe.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">05</span>
+        <div>
+          <h2>What operators get</h2>
+          <p>No tokens. Something better than a promise.</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="panel">
+          <span class="tag">Devnet</span>
+          <h3>A named slot</h3>
+          <p>Your handle in <code>cluster validators</code>, your name in the repo, and the
+          first look at every design change before it ships.</p>
+        </div>
+        <div class="panel">
+          <span class="tag">Mainnet</span>
+          <h3>Bootstrap list</h3>
+          <p>The plan puts 15% of supply behind the operators who were actually up during
+          devnet. Locked, vested, not sold — and not distributed yet.</p>
+        </div>
+        <div class="panel">
+          <span class="tag">Either</span>
+          <h3>A say in what breaks</h3>
+          <p>Operators see the failure modes first. That is the group worth being in when
+          the protocol is still soft enough to change.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supply — 600,000,000 CHRONYX, fixed</title>
+<meta name="description" content="Chronyx has a fixed supply of 600,000,000 CHRONYX. No inflation, no mint function, no presale. Devnet allocation and the planned mainnet split.">
+<meta property="og:title" content="Supply — 600,000,000 CHRONYX, fixed">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="supply">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">Supply</p>
+    <h1>Six hundred million.<br>Then never again.</h1>
+    <p class="lede">
+      Every CHRONYX that will ever exist was created in the genesis file. There is no
+      mint function to call, no inflation schedule to tune, and no team allocation
+      waiting to unlock. The number is a constant, and a test fails if it moves.
+    </p>
+    <div class="facts" style="border-bottom:0">
+      <div><b>600,000,000</b><span>total CHRONYX</span></div>
+      <div><b>0%</b><span>inflation</span></div>
+      <div><b>1e9</b><span>quanta per CHRONYX</span></div>
+      <div><b>6e17</b><span>total quanta</span></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>Where the devnet supply sits</h2>
+          <p>One genesis file, four validators, one faucet. Everything adds up to the cap.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>Holder</th><th>CHRONYX</th><th>Share</th><th>Notes</th></tr>
+        <tr><td>Devnet faucet</td><td class="mono">500,000,000</td><td class="mono">83.3%</td><td>open, capped at 1,000 per request</td></tr>
+        <tr><td>Validator 1</td><td class="mono">25,000,000</td><td class="mono">4.2%</td><td>bootstrap balance, not a payment</td></tr>
+        <tr><td>Validator 2</td><td class="mono">25,000,000</td><td class="mono">4.2%</td><td></td></tr>
+        <tr><td>Validator 3</td><td class="mono">25,000,000</td><td class="mono">4.2%</td><td></td></tr>
+        <tr><td>Validator 4</td><td class="mono">25,000,000</td><td class="mono">4.2%</td><td></td></tr>
+        <tr><td><strong>Total</strong></td><td class="mono"><strong>600,000,000</strong></td><td class="mono"><strong>100%</strong></td><td></td></tr>
+      </table>
+
+      <p class="note" style="margin-top:22px">
+        <strong>Devnet tokens are worthless.</strong> The faucet exists so people can
+        move coins around while testing. Nothing here is for sale, and nothing here
+        will carry over to mainnet.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Count it yourself</h2>
+          <p>One CHRONYX is one billion quanta. The node stores integers; this converts.</p>
+        </div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-head"><span>quanta ↔ CHRONYX</span><span>1 CHRONYX = 1,000,000,000</span></div>
+        <div class="demo-body">
+          <div class="field">
+            <label for="calc-in">CHRONYX</label>
+            <input id="calc-in" type="text" inputmode="decimal" value="600000000" aria-describedby="calc-out">
+          </div>
+          <table class="tbl" style="margin-top:18px">
+            <tr><td>quanta</td><td class="mono" id="calc-quanta">—</td></tr>
+            <tr><td>CHRONYX</td><td class="mono" id="calc-chronyx">—</td></tr>
+          </table>
+          <p class="stat" id="calc-out">Rounded to the nearest quantum, because fractions of a quantum do not exist.</p>
+        </div>
+      </div>
+
+      <div class="code" style="margin-top:22px">
+        <div class="code-head"><span>verify against a running node</span><button class="copy" data-copy="c-supply" type="button">copy</button></div>
+<pre id="c-supply">chronyx cluster supply
+# {"quanta": 600000000000000000, "quanta_per_chronyx": 1000000000}</pre>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>How the cap survives a pull request</h2>
+          <p>Policy that lives in comments gets deleted. This one lives in CI.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h3>An invariant test</h3>
+          <p class="quiet">Genesis may not exceed the cap, transfers may not create
+          quanta, and a rejected transaction changes nothing.</p>
+          <div class="code">
+            <div class="code-head"><span>crates/core/tests/invariants.rs</span></div>
+<pre>assert_eq!(state.total_supply(), cap_quanta());
+
+state.apply(&amp;tx).unwrap();
+assert_eq!(state.total_supply(), funded);</pre>
+          </div>
+        </div>
+        <div>
+          <h3>A source guard</h3>
+          <p class="quiet">CI greps the tree for anything that creates quanta outside
+          the account module, and for the supply constants moving.</p>
+          <div class="code">
+            <div class="code-head"><span>scripts/guard-supply.sh</span></div>
+<pre>$ bash scripts/guard-supply.sh
+ok  supply guard: no minting paths,
+    constants intact</pre>
+          </div>
+        </div>
+      </div>
+      <p class="small quiet" style="margin-top:18px">
+        A change that legitimately needs an exception is not a code change — it is a
+        monetary-policy change. It gets an issue, a review, and the guard script edit
+        in the same diff so nobody can miss it.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>The plan for mainnet</h2>
+          <p>Documented so it can be argued with. Not implemented, not distributed.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>Bucket</th><th>Share</th><th>Condition</th></tr>
+        <tr><td>Community and incentives</td><td class="mono">55%</td><td>earned by running, testing, building</td></tr>
+        <tr><td>Validator bootstrap</td><td class="mono">15%</td><td>operators who were up during devnet</td></tr>
+        <tr><td>Treasury</td><td class="mono">15%</td><td>audits, infrastructure, bounties</td></tr>
+        <tr><td>Team</td><td class="mono">10%</td><td>4-year vest, no unlock before audit</td></tr>
+        <tr><td>Liquidity</td><td class="mono">5%</td><td>only if a market exists at all</td></tr>
+      </table>
+
+      <p class="note" style="margin-top:22px">
+        <strong>None of that exists yet.</strong> There is no mainnet token, no sale, and
+        no date. The audit comes first; <a href="support.html">Support</a> explains what
+        it costs and where the money goes.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
