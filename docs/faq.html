@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ — the questions a skeptic asks</title>
+<meta name="description" content="Straight answers about Chronyx: is it a real chain, why proof of authority, is the supply really fixed, where is the audit, and what is not shipped.">
+<link rel="canonical" href="https://hynxilona.github.io/chronyx/faq.html">
+<meta name="theme-color" content="#08090b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Chronyx">
+<meta property="og:title" content="FAQ — the questions a skeptic asks">
+<meta property="og:description" content="Straight answers about Chronyx: is it a real chain, why proof of authority, is the supply really fixed, where is the audit, and what is not shipped.">
+<meta property="og:url" content="https://hynxilona.github.io/chronyx/faq.html">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FAQ — the questions a skeptic asks">
+<meta name="twitter:description" content="Straight answers about Chronyx: is it a real chain, why proof of authority, is the supply really fixed, where is the audit, and what is not shipped.">
+<meta name="twitter:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="faq">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <details class="menu">
+        <summary class="icon-btn" aria-label="Sections">Menu</summary>
+        <nav class="menu-panel" aria-label="Sections">
+          <a href="how.html">How it works</a>
+          <a href="supply.html">Supply</a>
+          <a href="validators.html">Validators</a>
+          <a href="contribute.html">Contribute</a>
+          <a href="support.html">Support</a>
+        </nav>
+      </details>
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">FAQ</p>
+    <h1>The questions<br><span class="grad-text">you should ask.</span></h1>
+    <p class="lede">
+      If a stranger sent you this link, these are the things worth checking before
+      you believe anything else on the site. Short answers, including the ones that
+      are not flattering.
+    </p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>The chain</h2>
+          <p>What it is, and what it deliberately is not.</p>
+        </div>
+      </div>
+
+      <div class="faq">
+        <details>
+          <summary>Is this a real blockchain, or a wrapper around something else?</summary>
+          <div class="a">
+            <p>A real one in the narrow sense: its own state machine, its own
+            peer-to-peer protocol, its own append-only ledger, and native accounts.
+            There is no EVM, no contract VM, and no token contract. Run
+            <code>chronyx devnet join</code> and your node downloads and replays
+            every block from genesis — if the rules were wrong, the state would
+            diverge and you would see it.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Why Proof of Authority? That is just a permissioned chain.</summary>
+          <div class="a">
+            <p>Correct — at v1 it is permissioned. Four keys defined in genesis take
+            slots in turn, and three of them must sign. That is a deliberate devnet
+            choice: 400 ms deterministic finality, and a failure surface small enough
+            to reason about.</p>
+            <p>PoW is the exit from that. A proof of work is how a new validator earns
+            a slot, so entry costs compute rather than a token or an allowlist. The
+            mining and verification code exists today; wiring a proof into a scheduled
+            slot is the next milestone, not a shipped feature. The site says so on
+            every page that mentions it.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Why not fork Solana or use an existing framework?</summary>
+          <div class="a">
+            <p>Because the interesting parts are exactly the ones a fork hides. PoH
+            here is a sequential SHA-256 chain — 50 ms per tick — not Turbine, not
+            Gulf Stream. The ledger is JSONL replayed at startup, gossip is plain TCP,
+            and accounts are Ed25519 with per-account nonces.</p>
+            <p>It is smaller than Solana on purpose. Every line is meant to be
+            readable by one person in an afternoon.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What does 400 ms finality actually mean?</summary>
+          <div class="a">
+            <p>Slots are 400 ms. The scheduled leader for a slot produces one signed
+            block; three of the four validators sign it; the block is final in that
+            slot. There is no probabilistic waiting and no reorg window. If quorum is
+            not reached, the slot is empty and the chain moves on.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>How fast is it? What is the TPS?</summary>
+          <div class="a">
+            <p>Unknown, and no number will be quoted that cannot be reproduced. The
+            block interval is fixed at 400 ms. Transactions per block is a different
+            question, and there is no benchmark command or public node to run one
+            against yet. When there is, the command will be in the repo next to the
+            result.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Supply and money</h2>
+          <p>The part where most projects start lying.</p>
+        </div>
+      </div>
+
+      <div class="faq">
+        <details>
+          <summary>Can I buy CHRONYX?</summary>
+          <div class="a">
+            <p>No. There is no sale, no presale, no market, and no listing. Devnet
+            coins come from a faucet and are test units. Any account, site or person
+            offering to sell you CHRONYX is scamming you.</p>
+            <p>If a market ever exists it will be after an audit and a mainnet, and it
+            will be announced in the repo first.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>How do I know the supply is really fixed?</summary>
+          <div class="a">
+            <p>Genesis creates exactly 600,000,000 CHRONYX, and every transfer
+            conserves quanta. Four invariant tests cover the genesis cap, conservation
+            across transfers, rejected transactions changing nothing, and the absence
+            of a mint path. A source guard fails CI if quanta are created outside
+            <code>state.rs</code> or the supply constants move, and branch protection
+            requires those checks before a merge.</p>
+            <p>The honest limit: this is tests and a guard, not a formal proof. That
+            is precisely what an external audit is for.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Is there an airdrop or a token sale planned?</summary>
+          <div class="a">
+            <p>No airdrop, no sale, no points program. The mainnet split in
+            <code>TOKENOMICS.md</code> is a plan for where the same 600M would sit —
+            community, bootstrap validators, treasury, team, liquidity — and none of it
+            is implemented in v1. Genesis only knows flat public-key balances.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Where is the audit?</summary>
+          <div class="a">
+            <p>Not done, not booked. An external consensus and state-transition review
+            is the first thing funding goes to; the working estimate is $25k–60k, which
+            is more than this project has. Until it happens, treat the code as
+            unaudited and do not put value on it.</p>
+            <p>The costs and the spending rule are public in
+            <a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">docs/FUNDING.md</a>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What happens to devnet coins if the chain resets?</summary>
+          <div class="a">
+            <p>They disappear, because a reset ships a new genesis and a new chain id.
+            Every reset is announced in the repo first, with the old genesis hash and
+            the new one, so nobody is surprised. Devnet balances are not an investment
+            and not a promise.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>People and risk</h2>
+          <p>Who is accountable, and what happens when they are not here.</p>
+        </div>
+      </div>
+
+      <div class="faq">
+        <details>
+          <summary>Who is behind this?</summary>
+          <div class="a">
+            <p>One independent developer. No company, no foundation, no investors, no
+            team page with stock photos. That is a real risk and it is stated plainly
+            rather than dressed up.</p>
+            <p>The mitigations are structural: MIT license, no admin key, no mint
+            function, and a ledger anyone can replay from genesis.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What happens if you disappear?</summary>
+          <div class="a">
+            <p>The code keeps working. Binaries and source are public under MIT, the
+            ledger is append-only and replays from genesis, and there is no admin RPC
+            or mint key to lose. Anyone can fork it or keep running the existing
+            chain.</p>
+            <p>What does not survive is the roadmap, the audit funding, and the person
+            answering issues. Judge the project on the code, not on me.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Can I run a validator?</summary>
+          <div class="a">
+            <p>Anyone can run a follower today: two commands, no application. Signing
+            slots are four, fixed in genesis, and handed out by hand for this devnet.
+            Applications are queued for the next reset, and everyone in the queue is
+            pinged before it happens.</p>
+            <p>The milestone that removes the manual step is PoW admission. See the
+            <a href="validators.html">validator guide</a>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Is this a scam?</summary>
+          <div class="a">
+            <p>A scam needs something to take. There is no sale, no deposit address, no
+            token to buy, and no wallet connection on this site. The faucet gives away
+            test coins that are worth nothing.</p>
+            <p>If someone claiming to represent Chronyx asks you for money or a seed
+            phrase, they are lying.</p>
+          </div>
+        </details>
+      </div>
+
+      <p class="note" style="margin-top:28px">
+        <strong>Still unanswered?</strong> Open an issue with <code>question:</code> in
+        the title and the answer gets added here.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="press.html">Press kit</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

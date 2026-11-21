@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hynxilona.github.io/chronyx/sitemap.xml

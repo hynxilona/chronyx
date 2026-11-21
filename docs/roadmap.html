@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmap — shipped, next, and not</title>
+<meta name="description" content="What Chronyx has actually shipped, what is next in dependency order, and what is explicitly not part of v1. No dates.">
+<link rel="canonical" href="https://hynxilona.github.io/chronyx/roadmap.html">
+<meta name="theme-color" content="#08090b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Chronyx">
+<meta property="og:title" content="Roadmap — shipped, next, and not">
+<meta property="og:description" content="What Chronyx has actually shipped, what is next in dependency order, and what is explicitly not part of v1. No dates.">
+<meta property="og:url" content="https://hynxilona.github.io/chronyx/roadmap.html">
+<meta property="og:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Roadmap — shipped, next, and not">
+<meta name="twitter:description" content="What Chronyx has actually shipped, what is next in dependency order, and what is explicitly not part of v1. No dates.">
+<meta name="twitter:image" content="https://hynxilona.github.io/chronyx/assets/chronyx-og.png">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="roadmap">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="./">
+      <img class="only-dark" src="assets/chronyx-mark-dark.png" alt="">
+      <img class="only-light" src="assets/chronyx-mark-light.png" alt="">
+      <span>Chronyx</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="how.html" data-nav="how">How it works</a>
+      <a href="supply.html" data-nav="supply">Supply</a>
+      <a href="validators.html" data-nav="validators">Validators</a>
+      <a href="contribute.html" data-nav="contribute">Contribute</a>
+      <a href="support.html" data-nav="support">Support</a>
+    </nav>
+    <div class="head-actions">
+      <details class="menu">
+        <summary class="icon-btn" aria-label="Sections">Menu</summary>
+        <nav class="menu-panel" aria-label="Sections">
+          <a href="how.html">How it works</a>
+          <a href="supply.html">Supply</a>
+          <a href="validators.html">Validators</a>
+          <a href="contribute.html">Contribute</a>
+          <a href="support.html">Support</a>
+        </nav>
+      </details>
+      <button class="icon-btn" data-theme-toggle type="button">Light</button>
+      <a class="btn ghost" href="https://github.com/hynxilona/chronyx">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="wrap hero">
+    <p class="eyebrow">Roadmap</p>
+    <h1>What exists,<br><span class="grad-text">and what doesn't.</span></h1>
+    <p class="lede">
+      Ordered by dependency, not by date. An item moves to Shipped only when it is on
+      main and a stranger can run it. Anything not listed under Shipped does not
+      exist yet, whatever a post may imply.
+    </p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <div>
+          <h2>Shipped</h2>
+          <p>On main, in the release binaries, and covered by tests.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>Piece</th><th>What works today</th></tr>
+        <tr><td>Chain core</td><td>State, blocks, genesis, deterministic replay from the first block.</td></tr>
+        <tr><td>PoH</td><td>50 ms SHA-256 ticks; two nodes that agree on the hash agree on the order.</td></tr>
+        <tr><td>PoA</td><td>400 ms slots, round-robin leaders, 4 validators, quorum 3.</td></tr>
+        <tr><td>PoW</td><td>Mine and verify hashcash-style proofs. Admission is not wired yet.</td></tr>
+        <tr><td>Accounts</td><td>Ed25519 keys, per-account nonces, signed transfers.</td></tr>
+        <tr><td>Ledger</td><td>Append-only <code>blocks.jsonl</code>, replayed at startup; state is rebuilt, not stored.</td></tr>
+        <tr><td>Gossip</td><td>Plain TCP: hello and height, <code>GetBlocks</code> catch-up, live block fan-out.</td></tr>
+        <tr><td>Interface</td><td>15 HTTP RPC routes and about 50 namespaced CLI commands.</td></tr>
+        <tr><td>Supply guard</td><td>4 invariant tests, a source guard, and branch protection on the files that decide a balance.</td></tr>
+        <tr><td>Tests</td><td>35 passing; <code>fmt</code> clean and <code>clippy -D warnings</code> clean.</td></tr>
+        <tr><td>Release</td><td>Binaries for Linux, macOS and Windows with one checksum file for all of them.</td></tr>
+        <tr><td>Site</td><td>These pages. Static, no tracking, no analytics.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span>
+        <div>
+          <h2>Next, in order</h2>
+          <p>Each step unblocks the one after it. None of them is a promise of a date.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>PoW admission</h3>
+            <p>A valid proof becomes a scheduled slot. Mining and verification already
+            exist in <code>core</code>; what is missing is the state transition that
+            admits the key and the epoch logic around it. This is the change that lets
+            the validator set grow without a human deciding who joins.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>A public seed node</h3>
+            <p>A stable host others can join, plus a status snapshot generated from it.
+            A devnet nobody can reach is a local test with extra steps.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>A read-only explorer</h3>
+            <p>Blocks, accounts and supply read straight from RPC. No wallet, no
+            signing, no token — just a way to check the chain without installing it.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>An external audit</h3>
+            <p>Consensus and state-transition review by a firm that does this for a
+            living. It needs funding first; the budget and the public spend rule are in
+            <a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">docs/FUNDING.md</a>.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Fix, then audit again</h3>
+            <p>Findings fixed and reviewed a second time. One audit is an opinion. Two
+            is a process.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>A devnet reset with outside operators</h3>
+            <p>Six to eight validators, at least four outside one timezone. The current
+            four slots are full and were never meant to be permanent.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Mainnet</h3>
+            <p>Only after the audits and a testnet that has survived real operators.
+            There is no date here, and none will be invented to make a post look
+            better.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <div>
+          <h2>Not in v1</h2>
+          <p>Listed so nobody has to guess whether it is coming next week.</p>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr><th>Not shipping</th><th>Why</th></tr>
+        <tr><td>Token sale, presale, airdrop</td><td>Nothing to sell. Devnet coins are free test units.</td></tr>
+        <tr><td>Staking rewards or inflation</td><td>The supply is fixed. Validator incentives are a mainnet design question.</td></tr>
+        <tr><td>EVM or smart contracts</td><td>Native transfers only. There is no VM and no plan to bolt one on for v1.</td></tr>
+        <tr><td>On-chain governance</td><td>Multisig and process come after the audits, not before.</td></tr>
+        <tr><td>Light clients or a mobile wallet</td><td>Not started. The RPC is the interface for now.</td></tr>
+        <tr><td>Exchange listings</td><td>Not applicable. There is no market and no token to list.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <div>
+          <h2>How this list is maintained</h2>
+          <p>The rule is boring on purpose.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label"><b>Shipped</b>needs proof</div>
+        <div>
+          <p>A merged commit and a command a stranger can run. If it only exists in a
+          branch or a screenshot, it is not shipped.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label"><b>Next</b>needs code</div>
+        <div>
+          <p>Either something in the tree or a written design in <code>docs/</code>.
+          Ideas without either stay out of the list.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label"><b>Dates</b>stay out</div>
+        <div>
+          <p>An order is useful; a date is a guess that turns into a lie when one thing
+          slips. When something is scheduled, the commit says so.</p>
+        </div>
+      </div>
+
+      <p class="note" style="margin-top:26px">
+        <strong>Check it yourself.</strong> The commit history is the only changelog:
+        <a href="https://github.com/hynxilona/chronyx/commits/main">github.com/hynxilona/chronyx/commits/main</a>.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="only-dark" src="assets/chronyx-mark-dark.png" width="28" alt="">
+        <img class="only-light" src="assets/chronyx-mark-light.png" width="28" alt="">
+        <p class="fine">PoH orders. PoA finalizes. PoW admits. A Rust chain with a fixed
+        supply and no framework to hide behind.</p>
+      </div>
+      <div>
+        <h4>Chain</h4>
+        <ul>
+          <li><a href="how.html">How it works</a></li>
+          <li><a href="supply.html">Supply</a></li>
+          <li><a href="validators.html">Validators</a></li>
+          <li><a href="contribute.html">Contribute</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/TOKENOMICS.md">Tokenomics</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/docs/FUNDING.md">Funding</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/SECURITY.md">Security</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/blob/main/CONTRIBUTING.md">Contributing</a></li>
+          <li><a href="press.html">Press kit</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Code</h4>
+        <ul>
+          <li><a href="https://github.com/hynxilona/chronyx">GitHub</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/releases">Releases</a></li>
+          <li><a href="https://github.com/hynxilona/chronyx/issues">Issues</a></li>
+          <li><a href="support.html">Support the work</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Chronyx · MIT · chronyx-devnet-1</span>
+      <span>Not audited. No value. No promises.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -36,6 +36,27 @@
     if (current) current.setAttribute("aria-current", "page");
   }
 
+  /* small-screen menu -------------------------------------------------- */
+
+  var menu = document.querySelector(".menu");
+  if (menu) {
+    menu.addEventListener("click", function (e) {
+      if (e.target.closest("a")) menu.removeAttribute("open");
+    });
+    document.addEventListener("click", function (e) {
+      if (menu.hasAttribute("open") && !menu.contains(e.target)) {
+        menu.removeAttribute("open");
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && menu.hasAttribute("open")) {
+        menu.removeAttribute("open");
+        var summary = menu.querySelector("summary");
+        if (summary) summary.focus();
+      }
+    });
+  }
+
   /* copy buttons ------------------------------------------------------ */
 
   document.querySelectorAll("[data-copy]").forEach(function (btn) {
