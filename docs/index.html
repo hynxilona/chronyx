@@ -43,7 +43,7 @@
     <div class="hero-grid">
       <div>
         <p class="eyebrow"><span class="dot">●</span> chronyx-devnet-1 · public devnet</p>
-        <h1>The clock.<br>The judge.<br>The door.</h1>
+        <h1>The clock.<br>The judge.<br><span class="grad-text">The door.</span></h1>
         <p class="lede">
           Proof of History orders every transaction. Proof of Authority makes that
           order final in 400 ms. Proof of Work decides who gets to sign.
@@ -86,7 +86,7 @@
       </div>
 
       <div class="row">
-        <div class="label"><b>PoH</b>orders</div>
+        <div class="label" data-mech="poh"><b>PoH</b>orders</div>
         <div>
           <h3>A clock nobody can argue with</h3>
           <p>Each tick hashes the one before it. To produce tick <em>n</em> you must have
@@ -97,7 +97,7 @@
       </div>
 
       <div class="row">
-        <div class="label"><b>PoA</b>finalizes</div>
+        <div class="label" data-mech="poa"><b>PoA</b>finalizes</div>
         <div>
           <h3>Finality in one slot</h3>
           <p>A small validator set takes slots round-robin. One signed block per slot,
@@ -107,7 +107,7 @@
       </div>
 
       <div class="row">
-        <div class="label"><b>PoW</b>admits</div>
+        <div class="label" data-mech="pow"><b>PoW</b>admits</div>
         <div>
           <h3>Work, not capital</h3>
           <p>Joining the validator set costs hashcash-style work that is expensive to

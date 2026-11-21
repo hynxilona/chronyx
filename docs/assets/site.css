@@ -304,9 +304,146 @@ p code, li code, td code { background: var(--surface-2); border: 1px solid var(-
 .pill.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
 .pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
 
+/* colour layer — one gradient, used in a few deliberate places */
+
+:root {
+  --g1: #7b6bff;
+  --g2: #b98cff;
+  --g3: #3fd0e0;
+  --grad: linear-gradient(100deg, var(--g1), var(--g2) 48%, var(--g3));
+  --glow-a: rgba(123, 107, 255, 0.20);
+  --glow-b: rgba(63, 208, 224, 0.11);
+}
+
+[data-theme="light"] {
+  --g1: #4331c4;
+  --g2: #6d3fd6;
+  --g3: #076e7c;
+  --glow-a: rgba(67, 49, 196, 0.10);
+  --glow-b: rgba(7, 110, 124, 0.08);
+}
+
+html {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(820px 460px at 10% -12%, var(--glow-a), transparent 70%),
+    radial-gradient(700px 420px at 96% 2%, var(--glow-b), transparent 72%),
+    radial-gradient(900px 520px at 50% 112%, var(--glow-a), transparent 74%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body { background: transparent; }
+
+::selection {
+  background: color-mix(in srgb, var(--g1) 38%, transparent);
+  color: var(--text);
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .grad-text,
+  .facts b,
+  .sec-head .num {
+    background-image: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.site-head::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0; height: 2px;
+  background: var(--grad);
+  opacity: .85;
+}
+
+.nav a[aria-current="page"] {
+  border-bottom-color: transparent;
+  border-image: var(--grad) 1;
+}
+
+.hero-side {
+  position: relative;
+  border-left: 0;
+  padding-left: 24px;
+}
+.hero-side::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, var(--g1), var(--g3));
+  opacity: .45;
+}
+
+.facts { position: relative; border-top: 0; }
+.facts::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--grad);
+  opacity: .5;
+}
+
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--g1) 8%, var(--surface)), var(--surface) 52%);
+  transition: border-color .18s ease;
+}
+.panel::before {
+  content: "";
+  position: absolute; left: -1px; right: -1px; top: -1px; height: 2px;
+  background: var(--grad);
+  opacity: .6;
+}
+.panel:hover { border-color: color-mix(in srgb, var(--g1) 40%, var(--line)); }
+
+.btn.primary {
+  background: var(--grad);
+  background-size: 170% 100%;
+  background-position: 0 0;
+  border-color: transparent;
+  color: #08090b;
+  transition: background-position .3s ease;
+}
+.btn.primary:hover {
+  background: var(--grad);
+  background-size: 170% 100%;
+  background-position: 100% 0;
+  border-color: transparent;
+  color: #08090b;
+}
+[data-theme="light"] .btn.primary,
+[data-theme="light"] .btn.primary:hover { color: #fff; }
+
+.note {
+  position: relative;
+  border-left: 0;
+  padding-left: 16px;
+}
+.note::before {
+  content: "";
+  position: absolute; left: 0; top: 2px; bottom: 2px; width: 2px;
+  background: var(--grad);
+}
+.note.warn::before { background: var(--warn); }
+
+.site-foot { position: relative; border-top-color: transparent; }
+.site-foot::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--grad);
+  opacity: .45;
+}
+
+.demo li .h { color: color-mix(in srgb, var(--g3) 62%, var(--text)); }
+
+.label[data-mech="poh"] b { color: var(--g1); }
+.label[data-mech="poa"] b { color: var(--g2); }
+.label[data-mech="pow"] b { color: var(--g3); }
+
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .hero-side { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 18px; }
+  .hero-side::before { display: none; }
   .facts { grid-template-columns: 1fr 1fr; }
   .facts div:nth-child(3) { border-left: 0; padding-left: 0; }
   .facts div { border-top: 1px solid var(--line); }
