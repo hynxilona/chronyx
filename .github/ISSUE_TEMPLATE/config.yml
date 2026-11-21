@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report
+    url: https://github.com/hynxilona/chronyx/security/advisories/new
+    about: Please report vulnerabilities privately, not in a public issue.
+  - name: How the chain works
+    url: https://hynxilona.github.io/chronyx/
+    about: Design overview, supply model, and how to join the devnet.

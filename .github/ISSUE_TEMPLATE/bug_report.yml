@@ -1,0 +1,49 @@
+name: Bug report
+description: Something broke on devnet
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Devnet only — not audited, no value. Never paste secret keys.
+        For vulnerabilities, use the private flow in SECURITY.md instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Actual behaviour, including any error output.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: Commands, config, genesis hash. A minimal local devnet is ideal.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `chronyx --version`, or the commit you built.
+      placeholder: 0.1.0 (9ec8ab6)
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Other
+    validations:
+      required: true
