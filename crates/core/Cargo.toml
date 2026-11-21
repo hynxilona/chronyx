@@ -11,4 +11,4 @@ sha2.workspace = true
 ed25519-dalek.workspace = true
 hex.workspace = true
 thiserror = "2"
-rand = "0.8"
+rand = "0.10"
