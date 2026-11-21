@@ -1,17 +1,10 @@
 version: 2
 updates:
-  - package-ecosystem: cargo
-    directory: "/"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      patch:
-        patterns: ["*"]
-        update-types: ["patch"]
-
+  # Cargo versions are handled by `cargo audit` in security.yml plus manual
+  # upgrades. Dependabot's semver logic treats every 0.x minor as compatible,
+  # which turns into a wall of red PRs that do not compile.
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
