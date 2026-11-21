@@ -10,7 +10,7 @@ license = "MIT"
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }
 sha2 = "0.10"
-ed25519-dalek = { version = "2", features = ["serde", "rand_core"] }
+ed25519-dalek = { version = "3", features = ["serde", "rand_core"] }
 hex = "0.4"
 
 [profile.release]
