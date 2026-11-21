@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://hynxilona.github.io/chronyx/"><img src="https://img.shields.io/badge/site-live-7c5cff" alt="Website"></a>
   <a href="https://github.com/hynxilona/chronyx/actions/workflows/ci.yml"><img src="https://github.com/hynxilona/chronyx/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
   <img src="https://img.shields.io/badge/supply-600M%20CHRONYX-7c5cff" alt="600M fixed supply">
