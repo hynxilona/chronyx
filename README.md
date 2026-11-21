@@ -2,11 +2,16 @@
   <img src="assets/chronyx-logo-dark.png" alt="Chronyx" width="520">
 </p>
 
+<p align="center">
+  <a href="https://github.com/hynxilona/chronyx/actions/workflows/ci.yml"><img src="https://github.com/hynxilona/chronyx/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
+  <img src="https://img.shields.io/badge/supply-600M%20CHRONYX-7c5cff" alt="600M fixed supply">
+  <img src="https://img.shields.io/badge/status-devnet-f5a623" alt="devnet">
+</p>
+
 # Chronyx
 
 > **PoH orders. PoA finalizes. PoW admits.**
-
-
 
 | Mechanism | Role | Why |
 |---|---|---|
@@ -32,7 +37,7 @@ Working today:
 - ✅ **Devnet faucet** — nonce-safe under concurrent requests, 1 000 CHRONYX per request
 - ✅ **HTTP RPC** — 15 routes, JSON in/out
 - ✅ **CLI** — ~50 commands, Solana-style namespacing
-- ✅ **30 tests** — PoH, PoA, PoW, state, block validation, ledger, restart replay, catch-up
+- ✅ **31 tests** — PoH, PoA, PoW, state, block validation, ledger, restart replay, catch-up
 
 Not in v1: dynamic validator admission, QUIC, light clients, explorer.
 
@@ -126,6 +131,22 @@ proof in ~14 s on one core and verifies in microseconds; it prints the exact
 primitive; wiring proofs into an automatic join transaction is the v2 headline.
 
 ## Token model
+
+**Fixed supply: 600,000,000 CHRONYX.** No inflation, no runtime minting, no
+presale — every unit that will ever exist is in genesis. Solana runs ~638M
+total / ~592M circulating as of this writing, so 600M is a supply people can
+compare against without learning a new number.
+
+| Allocation (devnet genesis) | CHRONYX |
+|---|---:|
+| Faucet / community pool | 500,000,000 |
+| 4 genesis validators @ 25M | 100,000,000 |
+| **Total** | **600,000,000** |
+
+On mainnet the same 600M cap is intended to split roughly: 55% community and
+validator incentives, 15% validator bootstrap, 15% treasury, 10% team
+(4-year vest), 5% liquidity. v1 is a devnet and none of that is live yet —
+see [`docs/TOKENOMICS.md`](docs/TOKENOMICS.md).
 
 Only two fields per account:
 

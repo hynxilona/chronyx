@@ -11,6 +11,17 @@ use crate::types::Hash;
 /// Smallest unit. 1 CHRONYX = 1_000_000_000 quanta.
 pub const QUANTA_PER_CHRONYX: u64 = 1_000_000_000;
 
+/// Fixed supply: 600,000,000 CHRONYX.
+///
+/// Solana currently runs ~638M total and ~592M circulating, so 600M is a
+/// number people already have a feel for. v1 has no inflation and no runtime
+/// minting, so this is a hard cap: every unit exists in genesis or not at all.
+pub const TOTAL_SUPPLY_CHRONYX: u64 = 600_000_000;
+
+/// Bootstrap balance each genesis validator starts with: 25M CHRONYX.
+/// The rest of the supply sits in the devnet faucet.
+pub const VALIDATOR_ALLOCATION_CHRONYX: u64 = 25_000_000;
+
 /// Devnet faucet seed. Deterministic so every node can derive it.
 pub const FAUCET_SEED: [u8; 32] = [0xFA; 32];
 
@@ -57,6 +68,12 @@ impl Genesis {
         let mut validators = Vec::with_capacity(count);
         let mut allocations = Vec::new();
 
+        // Keep the arithmetic exact for any validator count: split the fixed
+        // supply evenly across validators + the faucet, and let the faucet
+        // absorb the rounding remainder.
+        let per_validator =
+            VALIDATOR_ALLOCATION_CHRONYX.min(TOTAL_SUPPLY_CHRONYX / (count as u64 + 1));
+
         for i in 0..count {
             let sk = SigningKey::from_bytes(&dev_validator_seed(i));
             let pk = hex::encode(sk.verifying_key().to_bytes());
@@ -65,10 +82,9 @@ impl Genesis {
                 name: format!("dev-{}", i + 1),
                 commission_bps: 500,
             });
-            // Seed each validator with a little runway.
             allocations.push(GenesisAllocation {
                 pubkey: pk,
-                quanta: 1_000 * QUANTA_PER_CHRONYX,
+                quanta: per_validator * QUANTA_PER_CHRONYX,
             });
         }
 
@@ -76,7 +92,7 @@ impl Genesis {
         let faucet = hex::encode(faucet_key.verifying_key().to_bytes());
         allocations.push(GenesisAllocation {
             pubkey: faucet.clone(),
-            quanta: 1_000_000 * QUANTA_PER_CHRONYX,
+            quanta: (TOTAL_SUPPLY_CHRONYX - per_validator * count as u64) * QUANTA_PER_CHRONYX,
         });
 
         Self {
@@ -135,6 +151,11 @@ impl Genesis {
         serde_json::from_str(s).map_err(|e| e.to_string())
     }
 
+    /// Sum of every genesis allocation, in quanta. Equal to the fixed supply.
+    pub fn total_quanta(&self) -> u64 {
+        self.allocations.iter().map(|a| a.quanta).sum()
+    }
+
     pub fn validator_identities(&self) -> Result<Vec<[u8; 32]>, String> {
         self.validators
             .iter()
@@ -178,6 +199,19 @@ mod tests {
         let g = Genesis::devnet(2);
         let back = Genesis::from_json(&g.to_json()).unwrap();
         assert_eq!(g, back);
+    }
+
+    #[test]
+    fn devnet_supply_is_fixed() {
+        for n in [1usize, 3, 7, 23] {
+            let g = Genesis::devnet(n);
+            assert_eq!(
+                g.total_quanta(),
+                TOTAL_SUPPLY_CHRONYX * QUANTA_PER_CHRONYX,
+                "supply drifted for {n} validators"
+            );
+            assert!(g.allocations.iter().all(|a| a.quanta > 0));
+        }
     }
 
     #[test]

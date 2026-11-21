@@ -15,7 +15,10 @@ pub mod pow;
 pub mod state;
 pub mod types;
 
-pub use genesis::{Genesis, GenesisAllocation, GenesisValidator, QUANTA_PER_CHRONYX};
+pub use genesis::{
+    Genesis, GenesisAllocation, GenesisValidator, QUANTA_PER_CHRONYX, TOTAL_SUPPLY_CHRONYX,
+    VALIDATOR_ALLOCATION_CHRONYX,
+};
 pub use keys::KeypairFile;
 pub use state::{Account, State};
 pub use types::{Block, BlockHeader, Hash, Transaction, TxError};

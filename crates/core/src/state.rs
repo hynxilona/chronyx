@@ -97,7 +97,7 @@ impl State {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::genesis::{Genesis, QUANTA_PER_CHRONYX};
+    use crate::genesis::{Genesis, QUANTA_PER_CHRONYX, VALIDATOR_ALLOCATION_CHRONYX};
     use ed25519_dalek::SigningKey;
 
     fn setup() -> (State, SigningKey, SigningKey) {
@@ -114,7 +114,10 @@ mod tests {
         let state = State::from_genesis(&g).unwrap();
         for v in &g.validators {
             let key = crate::genesis::parse_key(&v.identity).unwrap();
-            assert_eq!(state.balance(&key), 1_000 * QUANTA_PER_CHRONYX);
+            assert_eq!(
+                state.balance(&key),
+                VALIDATOR_ALLOCATION_CHRONYX * QUANTA_PER_CHRONYX
+            );
         }
     }
 

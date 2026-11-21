@@ -9,6 +9,7 @@ use serde_json::{json, Value};
 
 use chronyx_core::genesis::{
     parse_key, Genesis, GenesisAllocation, GenesisValidator, QUANTA_PER_CHRONYX,
+    VALIDATOR_ALLOCATION_CHRONYX,
 };
 use chronyx_core::poh::PohRecorder;
 use chronyx_core::{pow, Block, KeypairFile, Transaction};
@@ -845,9 +846,21 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
                 name: "local".to_string(),
                 commission_bps: 500,
             });
+
+            // Fund it out of the faucet, not out of thin air: the supply is
+            // fixed, so every new allocation has to come from an existing one.
+            let local_quanta = VALIDATOR_ALLOCATION_CHRONYX * QUANTA_PER_CHRONYX;
+            let faucet = genesis.faucet.clone();
+            if let Some(alloc) = genesis
+                .allocations
+                .iter_mut()
+                .find(|a| Some(&a.pubkey) == faucet.as_ref())
+            {
+                alloc.quanta = alloc.quanta.saturating_sub(local_quanta);
+            }
             genesis.allocations.push(GenesisAllocation {
                 pubkey: kp.public.clone(),
-                quanta: 1_000 * QUANTA_PER_CHRONYX,
+                quanta: local_quanta,
             });
 
             genesis.validate().map_err(|e| anyhow!(e))?;
@@ -875,6 +888,10 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
             println!("devnet initialised in {}", dir.display());
             println!("chain_id   {}", genesis.chain_id);
             println!("genesis    {}", hex::encode(genesis.hash()));
+            println!(
+                "supply     {} CHRONYX",
+                genesis.total_quanta() / QUANTA_PER_CHRONYX
+            );
             println!("identity   {}", kp.public);
             println!();
             println!("start the node with:");
@@ -958,6 +975,7 @@ fn devnet_cmd(cfg: &CliConfig, cmd: DevnetCmd) -> anyhow::Result<()> {
             let g = load_genesis(&cfg.genesis_path)?;
             println!("chain_id   {}", g.chain_id);
             println!("hash       {}", hex::encode(g.hash()));
+            println!("supply     {}", g.total_quanta() / QUANTA_PER_CHRONYX);
             println!("slot_ms    {}", g.slot_ms);
             println!("ticks/slot {}", g.ticks_per_slot);
             println!("difficulty {}", g.pow_difficulty);
