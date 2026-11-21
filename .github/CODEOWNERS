@@ -1,0 +1,17 @@
+# Files that decide how many tokens exist, who owns them, and what the chain
+# accepts. Changes here need the maintainer's review, a note in the PR about
+# why balances cannot move, and a green supply-invariant run.
+
+crates/core/src/genesis.rs        @hynxilona
+crates/core/src/state.rs          @hynxilona
+crates/core/src/types.rs          @hynxilona
+crates/core/src/poa.rs            @hynxilona
+crates/core/src/poh.rs            @hynxilona
+crates/core/src/pow.rs            @hynxilona
+crates/node/src/ledger.rs         @hynxilona
+crates/node/src/node.rs           @hynxilona
+crates/core/tests/invariants.rs   @hynxilona
+scripts/guard-supply.sh           @hynxilona
+
+# Workflows and release plumbing ship code to users.
+.github/                          @hynxilona
